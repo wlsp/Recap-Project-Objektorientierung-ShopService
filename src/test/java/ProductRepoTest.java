@@ -28,7 +28,8 @@ class ProductRepoTest {
 
         //THEN
         Product expected = new Product("1", "Apfel");
-        assertEquals(actual, expected);
+        assertTrue(actual.isPresent());
+        assertEquals(expected, actual.get());
     }
 
     @org.junit.jupiter.api.Test
