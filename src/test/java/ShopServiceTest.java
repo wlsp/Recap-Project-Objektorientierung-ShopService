@@ -1,10 +1,13 @@
 import org.junit.jupiter.api.Test;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShopServiceTest {
+    private final IdService idService = new IdService();
 
     @Test
     void addOrderTest() throws NoProductFoundException {
@@ -16,9 +19,12 @@ class ShopServiceTest {
         Order actual = shopService.addOrder(productsIds);
 
         //THEN
-        Order expected = new Order("-1", List.of(new Product("1", "Apfel")), OrderStatus.PROCESSING);
+        Order expected = new Order("-1", List.of(new Product("1", "Apfel")), OrderStatus.PROCESSING, Instant.now());
         assertEquals(expected.products(), actual.products());
         assertNotNull(expected.id());
+
+        Timestamp timestamp = null;
+        System.out.println(timestamp);
     }
 
     @Test
@@ -28,7 +34,7 @@ class ShopServiceTest {
         Product product = new Product("1", "Apfel");
         OrderStatus expectedStatus = OrderStatus.PROCESSING;
 
-        Order order1 = new Order("1", List.of(product), expectedStatus);
+        Order order1 = new Order("1", List.of(product), expectedStatus, Instant.now());
         shopService.addOrder(List.of("1"));
 
         // WHEN

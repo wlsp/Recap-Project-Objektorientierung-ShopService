@@ -1,11 +1,12 @@
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class ShopService {
-    private ProductRepo productRepo = new ProductRepo();
-    private OrderRepo orderRepo = new OrderMapRepo();
+    private final ProductRepo productRepo = new ProductRepo();
+    private final OrderRepo orderRepo = new OrderMapRepo();
+    private final IdService idService = new IdService();
 
     public Order addOrder(List<String> productIds) throws NoProductFoundException {
         List<Product> products = new ArrayList<>();
@@ -19,7 +20,7 @@ public class ShopService {
             products.add(productToOrder.get());
         }
 
-        Order newOrder = new Order(UUID.randomUUID().toString(), products, OrderStatus.PROCESSING);
+        Order newOrder = new Order(idService.generateOrderId(), products, OrderStatus.PROCESSING, Instant.now());
 
         return orderRepo.addOrder(newOrder);
     }
@@ -28,5 +29,13 @@ public class ShopService {
         return orderRepo.getOrders().stream()
                 .filter(order -> order.status() == status)
                 .toList();
+    }
+
+
+    public OrderStatus uptadeOrderStatus(String id, OrderStatus status) {
+        Order order = orderRepo.getOrderById(id).withStatus(status);
+        orderRepo.removeOrder(id);
+        orderRepo.addOrder(order);
+        return order.status();
     }
 }
